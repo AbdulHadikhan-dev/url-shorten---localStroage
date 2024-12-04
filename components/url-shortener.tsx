@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { FiCopy, FiLoader, FiLink } from "react-icons/fi";
-import { FaFacebook, FaTwitter, FaLinkedin, FaInstagram } from "react-icons/fa";
-import { RiMenu3Line, RiCloseLine } from "react-icons/ri";
 import axios from "axios";
+
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 
@@ -16,8 +16,9 @@ const URLShortener = () => {
     shortUrl: "",
   });
   const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [copied, setCopied] = useState('');
+
+  const router = useRouter();
 
   const validateUrl = (input) => {
     const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/;
@@ -68,85 +69,6 @@ const URLShortener = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Navbar */}
-      <nav className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex-shrink-0 flex items-center">
-              <img
-                className="h-8 w-auto"
-                src="images.unsplash.com/photo-1614332287897-cdc485fa562d?w=128&h=128&fit=crop"
-                alt="Logo"
-              />
-              <span className="ml-2 text-xl font-bold text-gray-800">
-                URLify
-              </span>
-            </div>
-
-            <div className="hidden md:flex items-center space-x-8">
-              <a
-                href="#"
-                className="text-gray-600 hover:text-blue-600 transition-colors"
-              >
-                Home
-              </a>
-              <a
-                href="#"
-                className="text-gray-600 hover:text-blue-600 transition-colors"
-              >
-                Features
-              </a>
-              <a
-                href="#"
-                className="text-gray-600 hover:text-blue-600 transition-colors"
-              >
-                Pricing
-              </a>
-            </div>
-
-            <div className="md:hidden">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-gray-600 hover:text-gray-900 focus:outline-none"
-              >
-                {isMenuOpen ? (
-                  <RiCloseLine size={24} />
-                ) : (
-                  <RiMenu3Line size={24} />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile menu */}
-        {isMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              <a
-                href="#"
-                className="block px-3 py-2 text-gray-600 hover:text-blue-600"
-              >
-                Home
-              </a>
-              <a
-                href="#"
-                className="block px-3 py-2 text-gray-600 hover:text-blue-600"
-              >
-                Features
-              </a>
-              <a
-                href="#"
-                className="block px-3 py-2 text-gray-600 hover:text-blue-600"
-              >
-                Pricing
-              </a>
-            </div>
-          </div>
-        )}
-      </nav>
-
-      {/* Main content */}
       <main className="flex-grow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center mb-12">
@@ -242,23 +164,24 @@ const URLShortener = () => {
                     <Button
                       className="text-blue-700 font-medium break-all"
                       variant={"link"}
+                      onClick={() => router.push(`/${item.shorten}`)}
                     >
                       {item.shorten}
                     </Button>
                     <Button
                       onClick={() => {
-                        navigator.clipboard.writeText(item.shorten);
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 2000);
+                        navigator.clipboard.writeText(`${location.host}/${item.shorten}`);
+                        setCopied(item.shorten);
+                        setTimeout(() => setCopied(''), 2000);
                       }}
                       className="ml-4 p-2 text-blue-600 hover:text-blue-700 focus:outline-none"
                       aria-label="Copy shortened URL"
-                      variant={"icon"}
+                      variant={"ghost"}
                     >
                       <FiCopy size={20} />
                     </Button>
                   </div>
-                  {copied && (
+                  {copied === item.shorten && (
                     <p className="mt-2 text-sm text-green-600" role="alert">
                       Copied to clipboard!
                     </p>
@@ -269,111 +192,6 @@ const URLShortener = () => {
           </div>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">About Us</h3>
-              <p className="text-gray-400">
-                We provide fast and reliable URL shortening services for your
-                needs.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-              <ul className="space-y-2">
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    Home
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    Features
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    Pricing
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2">
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    Terms of Service
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    Contact
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Follow Us</h3>
-              <div className="flex space-x-4">
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  <FaFacebook size={24} />
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  <FaTwitter size={24} />
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  <FaLinkedin size={24} />
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  <FaInstagram size={24} />
-                </a>
-              </div>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400">
-            <p>© {new Date().getFullYear()} URLify. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };
