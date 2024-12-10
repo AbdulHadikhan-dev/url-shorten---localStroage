@@ -1,32 +1,43 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { FiCopy, FiLoader, FiLink } from "react-icons/fi";
-import axios from "axios";
 
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/toaster";
+
+import { useToast } from "@/hooks/use-toast";
+
+interface Shorten {
+  url: string;
+  shorten: string;
+}
 
 const URLShortener = () => {
   const [url, setUrl] = useState("");
   const [shortUrl, setShortUrl] = useState("");
-  const [shorten, setShorten] = useState([]);
+  const [shorten, setShorten] = useState<Shorten[]>([]);
   const [error, setError] = useState({
     url: "",
     shortUrl: "",
   });
   const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState('');
+  const [copied, setCopied] = useState("");
 
   const router = useRouter();
-
-  const validateUrl = (input) => {
+  const { toast } = useToast();
+  const validateUrl = (input: string) => {
     const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/;
     return urlPattern.test(input);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
+    const addMethod = shortUrl.replace(/\s{2,}/gi, " ").trim();
+    console.log(addMethod);
+
+    setShortUrl(addMethod);
     if (!url) {
       setError({ ...error, url: "Please enter a URL" });
       return;
@@ -35,7 +46,7 @@ const URLShortener = () => {
       setError({ ...error, url: "Please enter a valid URL" });
       return;
     }
-    if (shortUrl.length < 1) {
+    if (addMethod === " " || addMethod.length < 1) {
       return setError({ ...error, shortUrl: "Please enter a short URL" });
     }
     setLoading(true);
@@ -43,23 +54,36 @@ const URLShortener = () => {
       url: "",
       shortUrl: "",
     });
-    const response = await axios.post("/api/createShorten", {
-      url,
-      shortUrl,
-    });
     setLoading(false);
-    alert(response.data.message);
+    const findShorten = shorten.find((item) => {
+      return item.shorten.trim() === addMethod;
+    });
+    if (!findShorten) {
+      localStorage.setItem(
+        "shorten",
+        JSON.stringify([...shorten, { url, shorten: addMethod }])
+      );
+      toast({
+        title: "Shorten Create Successfully",
+        description: "shorten created successfully. and saved in localStorage",
+      });
+      setUrl("");
+      setShortUrl("");
+      fetchData();
+      return;
+    }
+
+    toast({
+      variant: "destructive",
+      title: "Uh oh! Something went wrong.",
+      description: "Shorten Already Exists!",
+    });
   };
 
   async function fetchData() {
-    try {
-      const response = await axios.get("/api/getShorten");
-      console.log(response.data);
-
-      setShorten(response.data.result);
-    } catch (error) {
-      console.error(error);
-    } finally {
+    const data = localStorage.getItem("shorten");
+    if (data) {
+      setShorten(JSON.parse(data));
     }
   }
 
@@ -143,6 +167,7 @@ const URLShortener = () => {
                   </p>
                 )}
               </div>
+              <Toaster />
               <button
                 type="submit"
                 disabled={loading}
@@ -159,20 +184,25 @@ const URLShortener = () => {
 
             {shorten.map((item) => {
               return (
-                <div className="mt-8 p-4 bg-gray-50 rounded-lg" key={item._id}>
+                <div
+                  className="mt-8 p-4 bg-gray-50 rounded-lg"
+                  key={item.shorten}
+                >
                   <div className="flex items-center justify-between">
                     <Button
                       className="text-blue-700 font-medium break-all"
                       variant={"link"}
-                      onClick={() => router.push(`/${item.shorten}`)}
+                      onClick={() => router.push(`/${item.shorten.trim()}`)}
                     >
                       {item.shorten}
                     </Button>
                     <Button
                       onClick={() => {
-                        navigator.clipboard.writeText(`${location.host}/${item.shorten}`);
+                        navigator.clipboard.writeText(
+                          `${location.host}/${item.shorten}`
+                        );
                         setCopied(item.shorten);
-                        setTimeout(() => setCopied(''), 2000);
+                        setTimeout(() => setCopied(""), 2000);
                       }}
                       className="ml-4 p-2 text-blue-600 hover:text-blue-700 focus:outline-none"
                       aria-label="Copy shortened URL"

@@ -1,5 +1,5 @@
 import React from "react";
-import { FaInstagram, FaLinkedin, FaFacebook, FaTwitter } from "react-icons/fa";
+import { FaInstagram, FaLinkedin, FaFacebook, FaTiktok } from "react-icons/fa";
 
 const Footer = () => {
   return (
@@ -75,25 +75,25 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Follow Us</h3>
             <div className="flex space-x-4">
               <a
-                href="#"
+                href="https://www.facebook.com/profile.php?id=100053919496314&mibextid=ZbWKwL"
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 <FaFacebook size={24} />
               </a>
               <a
-                href="#"
+                href="https://www.tiktok.com/@hadi_khan_offical_?_t=8oOt3IKNVfM&_r=1"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                <FaTwitter size={24} />
+                <FaTiktok size={24} />
               </a>
               <a
-                href="#"
+                href="https://www.linkedin.com/in/abdul-hadi-205194317"
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 <FaLinkedin size={24} />
               </a>
               <a
-                href="#"
+                href="https://www.instagram.com/hadi_khan_offical?igsh=d2JnZWVrMXhwa2Fs"
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 <FaInstagram size={24} />
