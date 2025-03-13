@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { FiCopy, FiLoader, FiLink } from "react-icons/fi";
+import { FiCopy, FiLoader, FiLink, FiTrash } from "react-icons/fi";
 
 import { useRouter } from "next/navigation";
 
@@ -90,6 +90,15 @@ const URLShortener = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleDeleteShorten = (shortID) => {
+    const Items = shorten.filter((data) => {
+      return data.shorten !== shortID;
+    });
+    console.log(shortID, Items);
+    localStorage.setItem("shorten", JSON.stringify(Items));
+    fetchData();
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -196,20 +205,32 @@ const URLShortener = () => {
                     >
                       {item.shorten}
                     </Button>
-                    <Button
-                      onClick={() => {
-                        navigator.clipboard.writeText(
-                          `${location.host}/${item.shorten}`
-                        );
-                        setCopied(item.shorten);
-                        setTimeout(() => setCopied(""), 2000);
-                      }}
-                      className="ml-4 p-2 text-blue-600 hover:text-blue-700 focus:outline-none"
-                      aria-label="Copy shortened URL"
-                      variant={"ghost"}
-                    >
-                      <FiCopy size={20} />
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        onClick={() => {
+                          navigator.clipboard.writeText(
+                            `${location.host}/${item.shorten}`
+                          );
+                          setCopied(item.shorten);
+                          setTimeout(() => setCopied(""), 2000);
+                        }}
+                        className="ml-4 p-2 text-blue-600 hover:text-blue-700 focus:outline-none"
+                        aria-label="Copy shortened URL"
+                        variant={"ghost"}
+                      >
+                        <FiCopy size={20} />
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          handleDeleteShorten(item.shorten);
+                        }}
+                        className="p-2 text-red-500 hover:text-red-600 focus:outline-none"
+                        aria-label="Delete shortened URL"
+                        variant={"ghost"}
+                      >
+                        <FiTrash size={20} />
+                      </Button>
+                    </div>
                   </div>
                   {copied === item.shorten && (
                     <p className="mt-2 text-sm text-green-600" role="alert">
