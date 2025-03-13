@@ -91,7 +91,7 @@ const URLShortener = () => {
     fetchData();
   }, []);
 
-  const handleDeleteShorten = (shortID) => {
+  const handleDeleteShorten = (shortID: string) => {
     const Items = shorten.filter((data) => {
       return data.shorten !== shortID;
     });
